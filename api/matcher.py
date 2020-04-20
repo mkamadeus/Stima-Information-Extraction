@@ -1,3 +1,4 @@
+import regex as re
 
 def kmp_border(pattern):
     result = []
@@ -59,4 +60,8 @@ def knuth_morris_pratt(sentence, pattern):
     # Return occurence index
     return i
 
-print(knuth_morris_pratt("abacaabaccabacabaab", "abacab"))
+def get_numbers_span(sentence):
+    # result = regex.findall(r'\b[0-9]+\b', sentence)
+    return [(m.start(0), m.end(0)) for m in re.finditer(r'\b[0-9]+\b', sentence)]
+
+# print(get_numbers("wfnewufnwe fnwe fi wifu i454  sjhbghsd 7848732 why you rare  ghyube 1728376"))

@@ -8,8 +8,10 @@ import ResultCard from "./components/ResultCard";
 export default class App extends Component {
   constructor() {
     super();
+    this.result = [];
     this.state = {
       hasPosted: false,
+      hasFinishedLoading: false,
     };
   }
 
@@ -24,10 +26,41 @@ export default class App extends Component {
     );
   }
 
+  generateResult = async () => {
+    const result = await axios
+      .get("http://localhost:5000/api/extract_information")
+      .then((response) => {
+        const results = [];
+        console.log(response);
+        for (let i = 0; i < response.data.result.data.length; i++) {
+          results.push(
+            <ResultCard
+              key={i}
+              filename={response.data.result.data[i].filename}
+              highlightedContent={
+                response.data.result.data[i].highlightedContent
+              }
+              keyword={response.data.result.keyword}
+              date={response.data.result.data[i].date}
+            />
+          );
+        }
+        console.log(results);
+
+        this.result = results;
+      })
+      .finally(() => {
+        this.setState({ hasFinishedLoading: true });
+      });
+
+    // this.result = result;
+  };
+
   setHasPosted() {
     this.setState({
       hasPosted: true,
     });
+    this.generateResult();
   }
 
   render() {
@@ -58,9 +91,12 @@ export default class App extends Component {
               <ExtractionForm onPost={this.setHasPosted.bind(this)} />
             </div>
           </div>
-          <div className="flex my-6 p-6 w-full shadow-lg bg-white rounded-lg">
-            <div>{this.state.hasPosted ? <ResultCard /> : null}</div>
-            {/* <ResultCard /> */}
+          <div>{this.state.hasFinishedLoading ? this.result : null}</div>
+          <div>
+            <ResultCard
+              filename="test"
+              highlightedContent={["asas", "asdsad", "asfsa", "sasafsaf"]}
+            />
           </div>
         </div>
       </div>

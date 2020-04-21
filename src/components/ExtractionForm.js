@@ -3,9 +3,8 @@ import axios from "axios";
 
 export default class ExtractionForm extends React.Component {
   state = {
-    filename: "",
     keyword: "",
-    content: "",
+    data: [],
   };
 
   changeHandler = (event) => {
@@ -25,6 +24,26 @@ export default class ExtractionForm extends React.Component {
       .catch((e) => console.log(e));
 
     this.props.onPost();
+  };
+
+  handleFolderChosen = (files) => {
+    let data = [];
+    Array.from(files).forEach((file) => {
+      console.log(file.name);
+      let fileReader = new FileReader();
+      fileReader.readAsText(file);
+
+      fileReader.onloadend = (e) => {
+        const content = fileReader.result;
+        let filedata = {
+          filename: file.name,
+          content: content,
+        };
+        data.push(filedata);
+      };
+    });
+    console.log(data);
+    this.setState({ data: data });
   };
 
   // Handling file input
@@ -50,7 +69,7 @@ export default class ExtractionForm extends React.Component {
             <input
               type="text"
               className="w-full border-gray-400 border rounded-md p-2 mx-3 text-sm"
-              placeholder="..."
+              placeholder="Input keyword here"
               name="keyword"
               value={keyword}
               onChange={this.changeHandler}
@@ -59,8 +78,11 @@ export default class ExtractionForm extends React.Component {
         </div>
         <div className="flex align-middle justify-center p-5">
           <input
+            directory=""
+            webkitdirectory=""
             type="file"
-            onChange={(e) => this.handleFileChosen(e.target.files[0])}
+            // onChange={(e) => this.handleFileChosen(e.target.files[0])}
+            onChange={(e) => this.handleFolderChosen(e.target.files)}
           />
         </div>
         <button

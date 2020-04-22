@@ -19,8 +19,14 @@ export default class ResultCard extends React.Component {
               </div>
             </div>
             <div className="w-full mx-2">
-              <div>{this.props.highlightedContent[i][1]}</div>
-              <div>{this.props.highlightedContent[i][2]}</div>
+              <div className="flex flex-row">
+                <div className="mr-2 font-semibold">Date</div>
+                <div>{this.props.highlightedContent[i][1]}</div>
+              </div>
+              <div className="flex flex-row">
+                <div className="mr-2 font-semibold">Count:</div>
+                <div>{this.props.highlightedContent[i][2]}</div>
+              </div>
               <div>
                 <SentenceComponent
                   sentence={this.props.highlightedContent[i][0]}
@@ -48,7 +54,7 @@ export default class ResultCard extends React.Component {
             <div className="mx-2">{this.props.keyword}</div>
           </div>
           <div className="p-1">
-            <div className="my-2">Result:</div>
+            <div className="my-2 text-xl font-semibold">Result:</div>
             <div className="p-4">{children}</div>
           </div>
         </div>

@@ -32,7 +32,7 @@ def kmp_border(pattern):
 # Returns the last occurence of each character
 
 
-def last_occurence(pattern):
+def last_occurrence(pattern):
     result = {}
     for index, character in enumerate(pattern):
         result[character] = index
@@ -44,9 +44,9 @@ def last_occurence(pattern):
 
 def boyer_moore(pattern, sentence):
     # Precompute occurence
-    occurence_values = last_occurence(pattern)
-    def occurence_function(
-        character): return occurence_values.get(character, -1)
+    occurrence_values = last_occurrence(pattern)
+    def occurrence_function(
+        character): return occurrence_values.get(character, -1)
 
     # Initialize index
     m = len(pattern)
@@ -69,7 +69,7 @@ def boyer_moore(pattern, sentence):
         if(not mismatch):
             return i+1
         else:
-            i = i + m - min(j, 1 + occurence_function(sentence[i]))
+            i = i + m - min(j, 1 + occurrence_function(sentence[i]))
             j = m - 1
 
     return -1
@@ -155,16 +155,20 @@ def extract_sentence_date(sentence):
     return result, date
 
 
-def extract_sentence_count(sentence):
+def extract_sentence_count(sentence, match_index):
     result = sentence
     count = None
+    difference = 9999
     number_patterns = [
-        r'([\b\s][0-9]+[\b\s])'
+        r'([0-9][0-9]?[0-9]?((.|,)[0-9][0-9][0-9])* (P|p)asien)',
+        r'([0-9][0-9]?[0-9]?((.|,)[0-9][0-9][0-9])* (O|o)rang)',
     ]
-
     for pattern in number_patterns:
-        if(not count):
-            count = re.search(pattern, result)
+        tmp_count = re.search(pattern, result)
+        if(tmp_count != None):
+            if(abs(tmp_count.start() - match_index) < difference):
+                difference = abs(tmp_count.start() - match_index)
+                count = re.search(pattern, result)
         result = re.sub(pattern, r'<u>\1</u>', result)
 
     if(not count):
@@ -182,11 +186,11 @@ def extract_sentence_information(sentence, keyword, matching_function):
     result = ""
 
     if(match_index != -1):
-        result = sentence[:match_index] + ('<span class="text-purple-700 font-bold">' + sentence[match_index:match_index+len(
-            keyword)] + '</span>') + sentence[match_index+len(keyword):]
+        result = re.sub(
+            '(' + keyword + ')', r'<span class="text-purple-700 font-bold">\1</span>', sentence, flags=re.I)
 
         result, date = extract_sentence_date(result)
-        result, count = extract_sentence_count(result)
+        result, count = extract_sentence_count(result, match_index)
 
         return result, date, count
     else:

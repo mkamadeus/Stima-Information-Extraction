@@ -1,4 +1,4 @@
-import React, { useRef, Component } from "react";
+import React, { Component } from "react";
 import axios from "axios";
 import "./assets/main.css";
 import { ReactComponent as SearchImage } from "./assets/search.svg";
@@ -12,6 +12,7 @@ export default class App extends Component {
     this.state = {
       hasPosted: false,
       hasFinishedLoading: false,
+      toggleAbout: false,
     };
   }
 
@@ -66,38 +67,62 @@ export default class App extends Component {
   render() {
     return (
       <div className="bg-gray-100 min-h-screen">
-        <nav className="flex items-center justify-between p-6 shadow-lg sticky">
-          <div className="flex">
-            <div className="text-xl font-bold text-purple-500">
-              Information Extraction
+        <nav className="flex p-6 shadow-lg sticky top-0 bg-white">
+          <div className="flex w-full items-center justify-between">
+            <div className="text-xl font-bold text-purple-600 hover:bg-purple-600 hover:text-white p-1">
+              Information Extractor
+            </div>
+            <div
+              className="text-xl font-bold text-purple-600 hover:bg-purple-600 hover:text-white p-1"
+              onClick={() =>
+                this.setState({ toggleAbout: !this.state.toggleAbout })
+              }
+            >
+              {this.state.toggleAbout ? "Main" : "About"}
             </div>
           </div>
         </nav>
         <div className="container mx-auto my-6 p-6">
           <div className="flex w-full my-6 p-6 shadow-lg rounded-lg bg-white">
-            <div className="flex flex-col p-6 items-center justify-center w-1/2">
-              <div className="p-4">
-                <SearchImage width="100%" height="100%" />
+            {!this.state.toggleAbout ? (
+              <div className="flex flex-col p-6 items-center justify-center w-1/2">
+                <div className="p-4">
+                  <SearchImage className="w-full h-full" />
+                </div>
+                <div className="font-semibold text-5xl text-center w-full leading-tight my-2">
+                  Welcome to
+                  <br /> Information Extractor!
+                </div>
+                <div className="text-md text-center w-full">
+                  Please input the keywords and file to be searched.
+                </div>
               </div>
-              <div className="font-semibold text-5xl text-center w-full leading-tight my-2">
-                Welcome to
-                <br /> Information Extractor!
+            ) : (
+              <div className="flex flex-col p-6 items-center justify-center w-1/2">
+                <div className="p-4 w-1/2 h-1/2">
+                  <img
+                    src={require("./mypicture.jpg")}
+                    alt="my pic"
+                    className="rounded-full shadow-lg"
+                  />
+                </div>
+                <div className="font-semibold text-4xl text-center w-full leading-tight my-2">
+                  Matthew Kevin Amadeus
+                </div>
+                <div className="font-medium text-xl text-center w-full leading-tight my-2">
+                  13518035
+                </div>
+                <div className="text-md text-center w-full">
+                  This project was created to fulfill the requirements of the
+                  Strategi Algoritma class.
+                </div>
               </div>
-              <div className="text-md text-center w-full">
-                Please input the keywords and file to be searched.
-              </div>
-            </div>
+            )}
             <div className="flex flex-col p-5 items-center justify-center w-1/2">
               <ExtractionForm onPost={this.setHasPosted.bind(this)} />
             </div>
           </div>
           <div>{this.state.hasFinishedLoading ? this.result : null}</div>
-          <div>
-            <ResultCard
-              filename="test"
-              highlightedContent={["asas", "asdsad", "asfsa", "sasafsaf"]}
-            />
-          </div>
         </div>
       </div>
     );
